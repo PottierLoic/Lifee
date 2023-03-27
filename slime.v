@@ -9,7 +9,7 @@ const width = 800
 const height = 800
 
 // Amounts used to construct simlation
-const cell_amount = 100
+const cell_amount = 1000
 
 //  spawn of cells
 const spawn_radius = 100
@@ -21,7 +21,7 @@ const bg_color = gx.black
 const trace_spawn_delay = 40
 const trace_duration = 1000
 
-const cell_size = 10
+const cell_size = 4
 const trace_size = 1
 
 struct Cell {
@@ -36,14 +36,22 @@ fn (mut cell Cell) update () {
 	cell.x += math.cos(cell.direction*math.pi)
 	cell.y += math.sin(cell.direction*math.pi)
 
-	if cell.x < 0 { cell.x = 0.0 
-				   cell.direction=rand.f64n(2) or { 0 } }
-	if cell.x > width { cell.x = width
-							  cell.direction=rand.f64n(2) or { 0 } }
-	if cell.y < 0 { cell.y = 0.0
-				   cell.direction=rand.f64n(2) or { 0 } }
-	if cell.y > height { cell.y = height
-							   cell.direction=rand.f64n(2) or { 0 } }
+	if cell.x < 0 { 
+		cell.x = 0.0
+		cell.direction=rand.f64n(2) or { 0 } 
+	}
+	if cell.x > width { 
+		cell.x = width
+		cell.direction=rand.f64n(2) or { 0 } 
+	}
+	if cell.y < 0 { 
+		cell.y = 0.0
+		cell.direction=rand.f64n(2) or { 0 } 
+	}
+	if cell.y > height { 
+		cell.y = height
+		cell.direction=rand.f64n(2) or { 0 }
+	}
 }
 
 fn new_cell() Cell {
@@ -109,9 +117,10 @@ fn (mut app App) display_sim() {
 	for index in 0 .. width * height { app.pixels[index] = u32(bg_color.abgr8()) }
 	
 	for cell in app.sim.cells {
-		for i in int(-cell_size/2) .. int(cell_size/2) {
-			for j in int(-cell_size/2) .. int(cell_size/2) {
-				app.pixels[int(cell.x + j) + i + (int(cell.y + i) + j) * width] = u32(cell_color.abgr8())
+		for xx in int(-cell_size/2) .. int(cell_size/2) {
+			for yy in int(-cell_size/2) .. int(cell_size/2) {
+				if cell.x + xx < 0 || cell.x + xx > width || cell.y + yy < 0 || cell.y + yy > height { continue }
+				app.pixels[int(cell.x + xx) + int(cell.y + yy) * width] = u32(cell_color.abgr8())
 			}
 		}
 		app.pixels[int(cell.x) + int(cell.y) * width] = u32(cell_color.abgr8())
